@@ -1,7 +1,13 @@
 import { prisma } from "@/config";
 
 async function findHotels() {
-  return prisma.hotel.findMany();
+  return prisma.hotel.findMany({
+    include: {
+      Rooms: {
+        select: { capacity: true, _count: true },
+      }
+    }
+  });
 }
 
 async function findRoomsByHotelId(hotelId: number) {
