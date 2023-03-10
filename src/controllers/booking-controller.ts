@@ -84,7 +84,8 @@ export async function deleteBooking(req:AuthenticatedRequest, res:Response) {
   if (!roomId) {
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
-  const booking = await bookingService.changeBookingRoomById(userId, Number(roomId));
+  const booking = await bookingService.deleteBookingRoomById(userId, Number(roomId));
+  console.log(booking)
 
 } catch (error) {
   if (error.name === "CannotBookingError") {
