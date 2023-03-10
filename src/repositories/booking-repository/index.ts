@@ -30,8 +30,10 @@ async function findByUserId(userId: number) {
       userId,
     },
     include: {
-      Room: true,
-    },
+      Room: {
+        include: { Hotel: true, _count: true }
+      }
+    }
   });
 }
 
