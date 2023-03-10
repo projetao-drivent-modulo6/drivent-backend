@@ -59,8 +59,7 @@ async function changeBookingRoomById(userId: number, roomId: number) {
   });
 }
 
-async function deleteBookingRoomById(userId: number, roomId: number) {
-  await checkValidBooking(roomId);
+async function deleteBookingRoomById(bookingId:number, userId:number) {
   const booking = await bookingRepository.findByUserId(userId);
 
   if (!booking || booking.userId !== userId) {
@@ -68,7 +67,7 @@ async function deleteBookingRoomById(userId: number, roomId: number) {
   }
 
   return bookingRepository.deleteBooking({
-    id: booking.id,
+    id: bookingId,
   })
 }
 
