@@ -59,10 +59,25 @@ async function changeBookingRoomById(userId: number, roomId: number) {
   });
 }
 
+async function deleteBookingRoomById(userId: number, roomId: number) {
+  await checkValidBooking(roomId);
+  const booking = await bookingRepository.findByUserId(userId);
+
+  if (!booking || booking.userId !== userId) {
+    throw cannotBookingError();
+  }
+
+  return bookingRepository.deleteBooking({
+    id: booking.id,
+  })
+}
+
+
 const bookingService = {
   bookingRoomById,
   getBooking,
   changeBookingRoomById,
+  deleteBookingRoomById,
 };
 
 export default bookingService;
