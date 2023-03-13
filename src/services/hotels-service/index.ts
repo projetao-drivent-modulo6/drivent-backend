@@ -20,9 +20,15 @@ async function listHotels(userId: number) {
 
 async function getHotels(userId: number) {
   await listHotels(userId);
-
-  const hotels = await hotelRepository.findHotels();
-  return hotels;
+  const cacheHotels = await hotelRepository.getCacheHotels("hoteldata");
+  if (!cacheHotels) {
+    const hotels = await hotelRepository.findHotels();
+    const postCacheHotel = await hotelRepository.postCacheHotels("hoteldata", hotels);
+    console.log("PostKeyRedis");
+    return hotels;
+  }
+  console.log("GetKeysRedis");
+  return cacheHotels;
 }
 
 async function getHotelsWithRooms(userId: number, hotelId: number) {
@@ -41,3 +47,35 @@ const hotelService = {
 };
 
 export default hotelService;
+
+// async function getHotels(userId: number) {
+//   await listHotels(userId);
+//   const redisClient = Redis.createClient();
+//   const CACHE_PREFIX = 'hotel-service:';
+//   const cacheKey = `${CACHE_PREFIX}hotels`;
+//   const cacheTTL = 60 * 60; // tempo de expiração do cache em segundos
+
+//   // tenta obter os dados do cache
+//   const cachedData = await new Promise<string | null>((resolve, reject) => {
+//     redisClient.get(cacheKey, (err, reply) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(reply);
+//       }
+//     });
+//   });
+
+//   // se os dados estiverem em cache, retorna-os imediatamente
+//   if (cachedData !== null) {
+//     return JSON.parse(cachedData);
+//   }
+
+//   // se não houver dados em cache, busca do banco de dados
+//   const hotels = await hotelRepository.findHotels();
+
+//   // armazena os dados em cache
+//   redisClient.set(cacheKey, JSON.stringify(hotels), 'EX', cacheTTL);
+
+//   return hotels;
+// }

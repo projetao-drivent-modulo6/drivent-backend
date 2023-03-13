@@ -2,6 +2,8 @@ import "reflect-metadata";
 import "express-async-errors";
 import express, { Express } from "express";
 import cors from "cors";
+import { createClient } from "redis";
+import redis from "redis";
 
 import { loadEnv, connectDb, disconnectDB } from "@/config";
 
@@ -20,6 +22,7 @@ import {
 } from "@/routers";
 
 const app = express();
+
 app
   .use(cors())
   .use(express.json())
