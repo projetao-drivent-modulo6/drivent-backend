@@ -20,6 +20,7 @@ async function findStages(userId: number) {
 async function findDates() {
   return prisma.activity.groupBy({
     by: ['date'],
+    orderBy: { date: 'asc' }
   });
 }
 
