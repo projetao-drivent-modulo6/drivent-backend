@@ -15,7 +15,39 @@ async function main() {
       },
     });
   }
-  console.log({ event });
+
+  const stagesIds: number[] = [];
+  let stage = await prisma.stage.findFirst();
+  if (stage) await prisma.stage.deleteMany();
+
+  const stages = ['Auditório Principal', 'Auditório Lateral', 'Sala de Workshop'];
+  for (let i = 0; i < stages.length; i++) {
+    const name = stages[i];
+    stage = await prisma.stage.create({ data: { name } });
+    stagesIds.push(stage.id);
+  }
+
+  const dates = [new Date('2023-10-21'), new Date('2023-10-22'), new Date('2023-10-23')]
+  const activity = await prisma.activity.findFirst();
+  if (activity) await prisma.activity.deleteMany();
+  
+  await prisma.activity.createMany({
+    data: [
+      { name: 'Minecraft: montando o PC ideal', duration: 1, capacity: 30, date: dates[0], stageId: stagesIds[0] },
+      { name: 'LoL: montando o PC ideal', duration: 1, capacity: 0, date: dates[0], stageId: stagesIds[0] },
+      { name: 'Palestra x', duration: 2, capacity: 30, date: dates[0], stageId: stagesIds[1] },
+      { name: 'Palestra y', duration: 1, capacity: 30, date: dates[0], stageId: stagesIds[2] },
+      { name: 'Palestra z', duration: 1, capacity: 30, date: dates[0], stageId: stagesIds[2] },
+
+      { name: 'Palestra x', duration: 2, capacity: 30, date: dates[1], stageId: stagesIds[0] },
+      { name: 'Palestra y', duration: 1, capacity: 30, date: dates[1], stageId: stagesIds[1] },
+      { name: 'Palestra z', duration: 1, capacity: 30, date: dates[1], stageId: stagesIds[2] },
+
+      { name: 'Palestra x', duration: 1, capacity: 30, date: dates[2], stageId: stagesIds[0] },
+      { name: 'Palestra y', duration: 1, capacity: 30, date: dates[2], stageId: stagesIds[1] },
+      { name: 'Palestra z', duration: 2, capacity: 30, date: dates[2], stageId: stagesIds[2] },
+    ]
+  });
 
   const ticketsTypesSeed = [
     {
