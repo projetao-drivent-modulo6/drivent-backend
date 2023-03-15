@@ -31,7 +31,7 @@ export async function getDates(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function postBooking(req: AuthenticatedRequest, res: Response) {
+export async function postActivityBooking(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const activityId = Number(req.params.activityId);
 
