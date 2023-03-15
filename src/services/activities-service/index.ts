@@ -60,10 +60,38 @@ async function postBooking(userId: number, activityId: number) {
   if (ticket.TicketType.isRemote) throw unauthorizedError();
   if (ticket.status !== "PAID") throw paymentRequiredError();
 
-  const booking = await activitiesRepository.findBooking(userId, activityId);
+  const currAct = await getActivityTime(activityId);
+  const userActivities = await activitiesRepository.findActivitiesByUserId(userId);
+
+  for (let i = 0; i < userActivities.length; i++) {
+    const userAct = await getActivityTime(userActivities[i].Activity.id);
+    if (userAct.date.getTime() === currAct.date.getTime()) {
+      if (userAct.initTime < currAct.finalTime 
+        && userAct.initTime >= currAct.initTime) {
+        throw forbidderError();
+      }
+    }
+  }
+
+  const booking = await activitiesRepository.findBookingById(userId, activityId);
   if (booking) throw forbidderError();
   
   await activitiesRepository.createBooking(userId, activityId);
+}
+
+async function getActivityTime(activityId: number) {
+  const activity = await activitiesRepository.findActivityById(activityId);
+  const activities = await activitiesRepository.findActivitiesByDateStage(activity.date, activity.stageId);
+
+  let initTime = 9;
+  for (let i = 0; i < activities.length; i++) {
+    const e = activities[i];
+    if (activity.id === e.id) break;
+    initTime += e.duration;
+  }
+
+  const finalTime = initTime + activity.duration;
+  return { initTime, finalTime, date: activity.date };
 }
 
 const activitiesService = {
