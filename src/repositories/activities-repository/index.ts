@@ -11,6 +11,7 @@ async function findStages(userId: number) {
             where: { userId: userId }
           }
         },
+        orderBy: { id: "asc" }
       }
     },
   });
