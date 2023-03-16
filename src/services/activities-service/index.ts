@@ -66,8 +66,8 @@ async function postBooking(userId: number, activityId: number) {
   for (let i = 0; i < userActivities.length; i++) {
     const userAct = await getActivityTime(userActivities[i].Activity.id);
     if (userAct.date.getTime() === currAct.date.getTime()) {
-      if (userAct.initTime < currAct.finalTime 
-        && userAct.initTime >= currAct.initTime) {
+      if (userAct.initTime >= currAct.initTime && userAct.initTime < currAct.finalTime 
+      || userAct.finalTime >= currAct.initTime && userAct.finalTime < currAct.initTime) {
         throw forbidderError();
       }
     }
