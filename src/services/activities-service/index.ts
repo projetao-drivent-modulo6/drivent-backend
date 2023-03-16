@@ -65,8 +65,7 @@ async function postBooking(userId: number, activityId: number) {
 
   for (let i = 0; i < userActivities.length; i++) {
     const userAct = await getActivityTime(userActivities[i].Activity.id);
-    // console.log(userAct, currAct);
-    console.log()
+    
     if (userAct.date.getTime() === currAct.date.getTime()) {
       const initConflict = (userAct.initTime >= currAct.initTime && userAct.initTime < currAct.finalTime);
       const finalConflict = (userAct.finalTime > currAct.initTime && userAct.finalTime <= currAct.finalTime);
