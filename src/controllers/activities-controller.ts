@@ -45,6 +45,7 @@ export async function postActivityBooking(req: AuthenticatedRequest, res: Respon
     if (error.name === "UnauthorizedError") return res.sendStatus(httpStatus.UNAUTHORIZED);
     if (error.name === "PaymentRequiredError") return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
     if (error.name === "ForbiddenError") return res.sendStatus(httpStatus.FORBIDDEN);
+    if (error.name === "ConflictError") return res.sendStatus(httpStatus.CONFLICT);
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }

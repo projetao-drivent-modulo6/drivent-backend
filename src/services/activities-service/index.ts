@@ -1,6 +1,6 @@
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
-import { forbidderError, notFoundError, paymentRequiredError, unauthorizedError } from "@/errors";
+import { conflictError, forbidderError, notFoundError, paymentRequiredError, unauthorizedError } from "@/errors";
 import activitiesRepository from "@/repositories/activities-repository";
 import { Activity, Prisma, Stage } from "@prisma/client";
 
@@ -60,6 +60,9 @@ async function postBooking(userId: number, activityId: number) {
   if (ticket.TicketType.isRemote) throw unauthorizedError();
   if (ticket.status !== "PAID") throw paymentRequiredError();
 
+  const booking = await activitiesRepository.findBookingById(userId, activityId);
+  if (booking) throw forbidderError();
+
   const currAct = await getActivityTime(activityId);
   const userActivities = await activitiesRepository.findActivitiesByUserId(userId);
 
@@ -69,12 +72,9 @@ async function postBooking(userId: number, activityId: number) {
     if (userAct.date.getTime() === currAct.date.getTime()) {
       const initConflict = (userAct.initTime >= currAct.initTime && userAct.initTime < currAct.finalTime);
       const finalConflict = (userAct.finalTime > currAct.initTime && userAct.finalTime <= currAct.finalTime);
-      if (initConflict || finalConflict) throw forbidderError();
+      if (initConflict || finalConflict) throw conflictError("Conflicting activity time!");
     }
   }
-
-  const booking = await activitiesRepository.findBookingById(userId, activityId);
-  if (booking) throw forbidderError();
   
   await activitiesRepository.createBooking(userId, activityId);
 }
