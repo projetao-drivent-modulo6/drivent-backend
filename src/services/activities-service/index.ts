@@ -65,11 +65,12 @@ async function postBooking(userId: number, activityId: number) {
 
   for (let i = 0; i < userActivities.length; i++) {
     const userAct = await getActivityTime(userActivities[i].Activity.id);
+    // console.log(userAct, currAct);
+    console.log()
     if (userAct.date.getTime() === currAct.date.getTime()) {
-      if (userAct.initTime >= currAct.initTime && userAct.initTime < currAct.finalTime 
-      || userAct.finalTime >= currAct.initTime && userAct.finalTime < currAct.initTime) {
-        throw forbidderError();
-      }
+      const initConflict = (userAct.initTime >= currAct.initTime && userAct.initTime < currAct.finalTime);
+      const finalConflict = (userAct.finalTime > currAct.initTime && userAct.finalTime <= currAct.finalTime);
+      if (initConflict || finalConflict) throw forbidderError();
     }
   }
 
